@@ -1,0 +1,20 @@
+#!/bin/sh
+echo "sleep down script"
+ips="192.168.1.25 192.168.1.71"
+sleepNas="1"
+if [ ! -f /mnt/BACKUP/Jail/lftp/mnt/BACKUP/locksync ]; then
+	for ip_addr in $ips; do
+		if ping -c 1 -t 1 $ip_addr > /dev/null ; then
+			echo "$ip_addr is online"
+			sleepNas="0"
+			break
+		fi
+	done
+	if [ "$sleepNas" -eq "1" ]; then
+		echo "Going to sleep";
+		acpiconf -s 3
+	fi
+else
+	echo "Synchro in progress"
+fi
+exit 0
