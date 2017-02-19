@@ -1,20 +1,28 @@
 #!/bin/sh
-echo "sleep down script"
+echo "wake up script"
 ips="192.168.1.25 192.168.1.71"
-sleepNas="1"
-if [ ! -f /mnt/BACKUP/Jail/lftp/mnt/BACKUP/locksync ]; then
+nasMac="00:23:7d:1e:8c:bd"
+nasIp="192.168.1.250"
+wakeNas="0"
+
+if ping -c 1 -t 1 $nasIp > /dev/null; then
+		echo "NAS is already ONLINE"
+else
+
 	for ip_addr in $ips; do
 		if ping -c 1 -t 1 $ip_addr > /dev/null ; then
-			echo "$ip_addr is online"
-			sleepNas="0"
-			break
+			wakeNas="1"
+			echo "Online device detected: $ip_addr"
+			break # Checking the other devices skipped to save time
 		fi
 	done
-	if [ "$sleepNas" -eq "1" ]; then
-		echo "Going to sleep";
-		acpiconf -s 3
+	# Wake NAS if required
+	if [ "$wakeNas" -eq "1" ]; then
+		echo "Waking NAS"
+		etherwake -b -i br-lan $nasMac
+	else
+		echo "No need to wake NAS"
 	fi
-else
-	echo "Synchro in progress"
 fi
 exit 0
+
