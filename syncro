@@ -1,0 +1,16 @@
+#!/bin/sh
+#file transfer to ftp
+touch /mnt/BACKUP/locksync
+lftp -c "
+open usr:pass@serv.fr:21
+set file:charset UTF-8
+set ftp:ssl-allow yes
+set ftp:ssl-auth TLS
+set ftp:ssl-force yet
+set ftp:ssl-protect-data yes
+set ftp:ssl-protect-list yes
+set ssl:verify-certificate off
+mirror --delete --verbose -x ^storj/$ --exclude-glob *.log --exclude-glob *.ldb --exclude-glob *.kfs / /mnt/BACKUP
+bye 0"
+chmod -R 777 /mnt/BACKUP
+rm -f /mnt/BACKUP/locksync
